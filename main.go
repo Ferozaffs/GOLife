@@ -33,6 +33,7 @@ var offsets = []Coord{
 }
 
 var paused = true
+var spacePressed = false
 
 type Game struct {
 	image        *ebiten.Image
@@ -58,7 +59,12 @@ func NewGame() *Game {
 
 func (g *Game) Update() error {
 	if ebiten.IsKeyPressed(ebiten.KeySpace) {
-		paused = !paused
+		if !spacePressed {
+			paused = !paused
+			spacePressed = true
+		}
+	} else {
+		spacePressed = false
 	}
 
 	if !paused {
@@ -106,7 +112,7 @@ func (g *Game) CheckPixels() {
 	for i := 0; i < surfaceWidth; i++ {
 		for j := 0; j < surfaceHeight; j++ {
 			px := (j*surfaceWidth + i) * 4
-			alive := g.pixels[px] == 0
+			alive := g.pixels[px] == aliveColor
 			neighbors := 0
 
 			for _, c := range offsets {
@@ -124,7 +130,7 @@ func (g *Game) CheckPixels() {
 					ny -= surfaceHeight
 				}
 
-				if g.pixels[(ny*surfaceWidth+nx)*4] == 0 {
+				if g.pixels[(ny*surfaceWidth+nx)*4] == aliveColor {
 					neighbors++
 				}
 			}
